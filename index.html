@@ -1,0 +1,1042 @@
+<!DOCTYPE html>
+<html lang="eu">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>2BTX-eko PLE osatuena</title>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;0,700;1,300&display=swap" rel="stylesheet">
+  <style>
+    /* ═══════════════════════════════════════════════
+       TOKENS
+    ═══════════════════════════════════════════════ */
+    :root {
+      --bg:      #f8f8f6;
+      --surface: #ffffff;
+      --text:    #0a0a0a;
+      --sub:     #888888;
+      --border:  #e8e8e8;
+      --card:    #ffffff;
+      --ls-blue: #001a3a;
+      --ls-yellow:#ffcc00;
+      --accent:  #0a0a0a;
+      --radius:  20px;
+      --shadow:  0 4px 24px rgba(0,0,0,0.06);
+      --font-display: 'Syne', sans-serif;
+      --font-body:    'DM Sans', sans-serif;
+    }
+    body.dark {
+      --bg:      #0d0d0d;
+      --surface: #161616;
+      --text:    #f0f0f0;
+      --sub:     #666666;
+      --border:  #2a2a2a;
+      --card:    #1e1e1e;
+      --shadow:  0 4px 24px rgba(0,0,0,0.4);
+    }
+    body.dark .section-canvas { filter: invert(1); opacity: 0.04; }
+    body.dark .grade-input { background: #2a2a2a; color: #f0f0f0; }
+    body.dark nav { background: rgba(13,13,13,0.85); }
+
+    /* ═══════════════════════════════════════════════
+       RESET & BASE
+    ═══════════════════════════════════════════════ */
+    *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-body);
+      overflow-x: hidden;
+      transition: background .3s, color .3s;
+    }
+
+    /* ═══════════════════════════════════════════════
+       INTRO
+    ═══════════════════════════════════════════════ */
+    #intro-overlay {
+      position: fixed; inset: 0;
+      background: var(--ls-blue);
+      z-index: 10000;
+      display: flex; flex-direction: column;
+      justify-content: center; align-items: center;
+      gap: 24px;
+    }
+    .star-loader {
+      width: 90px; height: 90px;
+      background: var(--ls-yellow);
+      clip-path: polygon(50% 0%,61% 35%,98% 35%,68% 57%,79% 91%,50% 70%,21% 91%,32% 57%,2% 35%,39% 35%);
+      animation: star-burst 2.8s cubic-bezier(0.8,0,0.2,1) forwards;
+    }
+    .intro-text {
+      font-family: var(--font-display);
+      color: rgba(255,255,255,0.6);
+      font-size: 13px;
+      letter-spacing: 4px;
+      text-transform: uppercase;
+      animation: fadeup 2s ease forwards;
+    }
+    @keyframes star-burst {
+      0%   { transform: scale(0) rotate(0deg); opacity:0; }
+      30%  { transform: scale(1.6) rotate(180deg); opacity:1; }
+      100% { transform: scale(55) rotate(450deg); opacity:0; }
+    }
+    @keyframes fadeup {
+      from { opacity:0; transform:translateY(8px); }
+      to   { opacity:1; transform:translateY(0); }
+    }
+
+    /* ═══════════════════════════════════════════════
+       NAV
+    ═══════════════════════════════════════════════ */
+    nav {
+      position: fixed; top: 0; width: 100%; height: 56px;
+      background: rgba(248,248,246,0.82);
+      backdrop-filter: blur(24px) saturate(180%);
+      border-bottom: 1px solid var(--border);
+      z-index: 5000;
+      display: flex; align-items: center;
+      padding: 0 3vw;
+      gap: 4px;
+    }
+    .nav-logo {
+      font-family: var(--font-display);
+      font-weight: 800;
+      font-size: 15px;
+      letter-spacing: -0.5px;
+      margin-right: auto;
+    }
+    nav a {
+      color: var(--sub);
+      text-decoration: none;
+      font-size: 12px;
+      font-weight: 500;
+      padding: 6px 12px;
+      border-radius: 20px;
+      cursor: pointer;
+      transition: all .2s;
+      font-family: var(--font-body);
+      white-space: nowrap;
+    }
+    nav a:hover  { color: var(--text); background: var(--border); }
+    nav a.active { color: var(--text); background: var(--text); color: var(--bg); }
+
+    #dark-toggle {
+      background: none; border: 1px solid var(--border); border-radius: 50%;
+      width: 34px; height: 34px; cursor: pointer; font-size: 15px;
+      color: var(--sub); transition: all .2s; margin-left: 6px;
+    }
+    #dark-toggle:hover { background: var(--border); }
+
+    #cmd-trigger {
+      background: var(--border); border: none; border-radius: 8px;
+      padding: 6px 12px; font-size: 11px; color: var(--sub);
+      cursor: pointer; font-family: var(--font-body);
+      display: flex; align-items: center; gap: 6px; margin-left: 6px;
+    }
+    #cmd-trigger kbd {
+      background: var(--surface); border: 1px solid var(--border);
+      border-radius: 4px; padding: 1px 5px; font-size: 10px;
+    }
+
+    /* ═══════════════════════════════════════════════
+       SECTIONS
+    ═══════════════════════════════════════════════ */
+    section {
+      min-height: 100vh;
+      padding: 90px 5vw 80px;
+      display: none;
+      position: relative;
+      overflow: hidden;
+    }
+    section.active { display: block; animation: secFade .5s ease; }
+    @keyframes secFade {
+      from { opacity:0; transform:translateY(12px); }
+      to   { opacity:1; transform:translateY(0); }
+    }
+
+    .section-canvas {
+      position: absolute; top: 0; left: 0;
+      width: 100%; height: 100%;
+      pointer-events: none; z-index: 0;
+      opacity: 0.5;
+    }
+
+    .section-content { position: relative; z-index: 1; }
+
+    /* ═══════════════════════════════════════════════
+       TYPOGRAPHY
+    ═══════════════════════════════════════════════ */
+    h1 {
+      font-family: var(--font-display);
+      font-size: clamp(42px, 6vw, 80px);
+      font-weight: 800;
+      letter-spacing: -3px;
+      line-height: 1;
+      margin-bottom: 10px;
+    }
+    h2 { font-family: var(--font-display); font-weight: 700; }
+    h3, h4 { font-family: var(--font-display); font-weight: 700; }
+
+    .section-eyebrow {
+      font-size: 11px;
+      letter-spacing: 3px;
+      text-transform: uppercase;
+      color: var(--sub);
+      font-weight: 500;
+      margin-bottom: 12px;
+    }
+
+    /* ═══════════════════════════════════════════════
+       GRID & CARDS
+    ═══════════════════════════════════════════════ */
+    .grid { display: grid; grid-template-columns: repeat(12,1fr); gap: 16px; }
+    .span-3  { grid-column: span 3; }
+    .span-4  { grid-column: span 4; }
+    .span-5  { grid-column: span 5; }
+    .span-6  { grid-column: span 6; }
+    .span-7  { grid-column: span 7; }
+    .span-8  { grid-column: span 8; }
+    .span-9  { grid-column: span 9; }
+    .span-12 { grid-column: span 12; }
+
+    .card {
+      background: var(--card);
+      border-radius: var(--radius);
+      padding: 30px;
+      border: 1px solid var(--border);
+      transition: transform .35s cubic-bezier(.4,0,.2,1), box-shadow .35s, border-color .35s;
+      position: relative;
+      overflow: hidden;
+    }
+    .card:hover {
+      transform: translateY(-3px);
+      box-shadow: var(--shadow);
+      border-color: rgba(0,0,0,0.12);
+    }
+    .card-dark { background: var(--text); color: var(--bg); border-color: transparent; }
+    .card-dark:hover { border-color: transparent; }
+
+    /* ═══════════════════════════════════════════════
+       HOME
+    ═══════════════════════════════════════════════ */
+    .home-greeting {
+      font-family: var(--font-display);
+      font-size: clamp(50px,8vw,100px);
+      font-weight: 800;
+      letter-spacing: -4px;
+      line-height: 0.95;
+      margin-bottom: 40px;
+      background: linear-gradient(135deg, var(--text) 0%, #555 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    body.dark .home-greeting {
+      background: linear-gradient(135deg, #fff 0%, #999 100%);
+      -webkit-background-clip: text; background-clip: text;
+    }
+    .stat-big { font-family: var(--font-display); font-size: 56px; font-weight: 800; line-height: 1; }
+    .stat-label { font-size: 11px; letter-spacing: 2px; text-transform: uppercase; color: var(--sub); margin-top: 6px; }
+    .home-event-item { display:flex; align-items:center; gap:10px; padding:8px 0; border-bottom:1px solid var(--border); font-size:13px; }
+    .home-event-item:last-child { border-bottom: none; }
+    .home-event-item small { margin-left:auto; color:var(--sub); }
+    .event-dot { width:8px; height:8px; border-radius:50%; flex-shrink:0; }
+    .home-note-chip { padding:10px 14px; border-radius:12px; margin-bottom:8px; cursor:pointer; font-size:13px; transition:opacity .2s; }
+    .home-note-chip:hover { opacity:.75; }
+
+    /* ═══════════════════════════════════════════════
+       GRADES
+    ═══════════════════════════════════════════════ */
+    .grade-input {
+      width: 80px; padding: 8px; text-align: center;
+      border: 1px solid var(--border); border-radius: 10px;
+      font-size: 15px; font-weight: 700; background: var(--bg);
+      color: var(--text); font-family: var(--font-display);
+      transition: border-color .2s;
+    }
+    .grade-input:focus { outline:none; border-color: var(--text); }
+    .grade-row { transition: background .2s; }
+    .grade-row:hover { background: var(--bg); }
+    .grade-bar-wrap { flex:1; height:8px; background:var(--border); border-radius:99px; overflow:hidden; }
+    .grade-bar { height:100%; border-radius:99px; transition: width 1s cubic-bezier(.4,0,.2,1); }
+    .total-gpa-box {
+      background: var(--text); color: var(--bg);
+      border-radius: var(--radius); padding: 50px;
+      text-align: center; margin-top: 24px;
+    }
+    .gpa-big { font-family: var(--font-display); font-size: 100px; font-weight: 800; letter-spacing: -6px; line-height: 1; }
+
+    /* ═══════════════════════════════════════════════
+       ACADEMY
+    ═══════════════════════════════════════════════ */
+    .subj-selector { display:grid; grid-template-columns:repeat(auto-fill,minmax(180px,1fr)); gap:14px; margin-bottom:50px; }
+    .subj-tab {
+      background: var(--card); border: 1px solid var(--border);
+      padding: 28px 24px; border-radius: 18px;
+      cursor: pointer; transition: all .3s cubic-bezier(.4,0,.2,1);
+      position: relative; overflow: hidden;
+    }
+    .subj-tab::before {
+      content: ''; position: absolute; bottom:0; left:0; right:0; height:3px;
+      background: var(--accent); transform: scaleX(0); transform-origin: left;
+      transition: transform .3s;
+    }
+    .subj-tab:hover { transform:translateY(-4px); box-shadow:var(--shadow); }
+    .subj-tab:hover::before, .subj-tab.active::before { transform:scaleX(1); background: var(--accent); }
+    .subj-tab.active { background:var(--text); color:var(--bg); border-color:transparent; }
+    .subj-tab.active::before { background: var(--ls-yellow); }
+    .subj-icon { font-size:28px; margin-bottom:10px; }
+    .subj-name { font-family:var(--font-display); font-weight:700; font-size:14px; }
+    #subject-detail { display:none; border-top:1px solid var(--border); padding-top:40px; margin-top:10px; }
+    .det-color-bar { height:4px; border-radius:99px; margin-bottom:24px; width:60px; }
+    .resource-card {
+      display:flex; justify-content:space-between; align-items:center;
+      background: var(--bg); border:1px solid var(--border);
+      border-radius:12px; padding:16px 20px; margin-bottom:12px; transition:.2s;
+    }
+    .resource-card:hover { border-color:var(--text); }
+    .btn-link {
+      background:var(--text); color:var(--bg); padding:8px 16px;
+      border-radius:20px; text-decoration:none; font-size:11px;
+      font-weight:700; letter-spacing:.5px; transition:.2s;
+    }
+    .btn-link:hover { opacity:.8; }
+    .det-mini-bars { display:flex; gap:16px; margin-top:20px; }
+
+    /* ═══════════════════════════════════════════════
+       TASKS
+    ═══════════════════════════════════════════════ */
+    .task-input-wrap {
+      display:flex; gap:10px; margin-bottom:24px; flex-wrap:wrap;
+    }
+    .task-input-wrap input, .task-input-wrap select {
+      padding:12px 16px; border:1px solid var(--border);
+      border-radius:12px; font-size:14px; background:var(--card);
+      color:var(--text); font-family:var(--font-body);
+      transition: border-color .2s;
+    }
+    .task-input-wrap input:focus, .task-input-wrap select:focus { outline:none; border-color:var(--text); }
+    #task-input { flex:1; min-width:200px; }
+    .btn-primary {
+      background:var(--text); color:var(--bg); border:none;
+      padding:12px 24px; border-radius:12px; font-weight:700;
+      cursor:pointer; font-family:var(--font-display); font-size:13px;
+      transition:.2s; white-space:nowrap;
+    }
+    .btn-primary:hover { opacity:.8; }
+    .task-item {
+      display:flex; align-items:center; gap:14px;
+      background:var(--card); border:1px solid var(--border);
+      border-radius:14px; padding:16px 20px; margin-bottom:10px;
+      transition: all .3s; animation: slideIn .3s ease;
+    }
+    @keyframes slideIn { from{opacity:0;transform:translateX(-10px);} to{opacity:1;transform:translateX(0);} }
+    .task-item.done { opacity:.5; }
+    .task-item.done .task-title { text-decoration:line-through; }
+    .task-check {
+      width:26px; height:26px; border:2px solid var(--border);
+      border-radius:8px; cursor:pointer; display:flex;
+      align-items:center; justify-content:center; font-size:13px;
+      font-weight:800; transition:.2s; flex-shrink:0;
+    }
+    .task-item.done .task-check { background:var(--text); color:var(--bg); border-color:var(--text); }
+    .task-content { flex:1; }
+    .task-title { font-weight:600; font-size:14px; margin-bottom:4px; }
+    .task-tag { font-size:11px; padding:2px 8px; border-radius:20px; margin-right:6px; font-weight:600; }
+    .task-due { font-size:11px; color:var(--sub); }
+    .task-priority { font-size:10px; letter-spacing:1px; text-transform:uppercase; font-weight:700; padding:3px 8px; border-radius:20px; }
+    .priority-high   { background:#ff6b3520; color:#ff6b35; }
+    .priority-medium { background:#ffd93d20; color:#b89a00; }
+    .priority-low    { background:#a8e6cf40; color:#2a7a5a; }
+    .task-del { background:none; border:none; color:var(--border); font-size:20px; cursor:pointer; padding:0 4px; transition:.2s; }
+    .task-del:hover { color:#e74c3c; }
+    .progress-bar-outer { height:6px; background:var(--border); border-radius:99px; overflow:hidden; margin-bottom:6px; }
+    #task-progress-fill { height:100%; background:var(--text); border-radius:99px; transition:width .8s cubic-bezier(.4,0,.2,1); }
+    .task-filter-bar { display:flex; gap:8px; margin-bottom:20px; }
+    .filter-btn { background:var(--card); border:1px solid var(--border); border-radius:20px; padding:6px 16px; font-size:12px; cursor:pointer; transition:.2s; color:var(--text); font-family:var(--font-body); }
+    .filter-btn:hover { border-color:var(--text); }
+
+    /* ═══════════════════════════════════════════════
+       NOTES
+    ═══════════════════════════════════════════════ */
+    .notes-container {
+      display:grid; grid-template-columns:280px 1fr;
+      height:68vh; border:1px solid var(--border);
+      border-radius:var(--radius); overflow:hidden;
+      background:var(--card); box-shadow:var(--shadow);
+    }
+    .notes-list { background:var(--bg); border-right:1px solid var(--border); padding:16px; display:flex; flex-direction:column; gap:8px; }
+    .notes-search-wrap { position:relative; }
+    .notes-search-wrap input {
+      width:100%; padding:8px 12px; border:1px solid var(--border);
+      border-radius:10px; font-size:12px; background:var(--card);
+      color:var(--text); font-family:var(--font-body);
+    }
+    .notes-search-wrap input:focus { outline:none; border-color:var(--text); }
+    #notes-sidebar { overflow-y:auto; flex:1; }
+    .note-preview {
+      padding:12px 14px; border-radius:12px; cursor:pointer;
+      margin-bottom:6px; position:relative; transition:.2s;
+      border: 1px solid transparent;
+    }
+    .note-preview:hover  { background:var(--border); }
+    .note-preview.active { background:var(--text); color:var(--bg); }
+    .note-preview.active .del-btn { color: rgba(255,255,255,0.5); }
+    .del-btn {
+      position:absolute; right:8px; top:10px;
+      background:none; border:none; color:#ccc;
+      font-weight:800; cursor:pointer; opacity:0; font-size:16px;
+    }
+    .note-preview:hover .del-btn { opacity:1; }
+    .note-editor { padding:36px; display:flex; flex-direction:column; gap:16px; }
+    #note-title {
+      font-size:28px; font-weight:800; border:none; outline:none;
+      width:100%; font-family:var(--font-display); background:transparent; color:var(--text);
+    }
+    #note-body {
+      flex:1; border:none; outline:none; font-size:15px;
+      resize:none; line-height:1.7; background:transparent;
+      color:var(--text); font-family:var(--font-body);
+    }
+    .note-toolbar { display:flex; gap:8px; align-items:center; border-bottom:1px solid var(--border); padding-bottom:12px; }
+    .color-dot {
+      width:18px; height:18px; border-radius:50%; cursor:pointer;
+      border:2px solid transparent; transition:.2s;
+    }
+    .color-dot.active, .color-dot:hover { border-color:var(--text); transform:scale(1.2); }
+    .note-count { font-size:11px; color:var(--sub); margin-left:auto; }
+
+    /* ═══════════════════════════════════════════════
+       CALENDAR
+    ═══════════════════════════════════════════════ */
+    .cal-header { display:flex; align-items:center; gap:16px; margin-bottom:24px; }
+    .cal-nav-btn {
+      background:var(--card); border:1px solid var(--border);
+      border-radius:10px; padding:8px 16px; cursor:pointer;
+      color:var(--text); font-size:14px; transition:.2s;
+    }
+    .cal-nav-btn:hover { background:var(--text); color:var(--bg); }
+    #cal-month-title { font-family:var(--font-display); font-size:28px; font-weight:800; }
+    .cal-weekdays { display:grid; grid-template-columns:repeat(7,1fr); gap:4px; margin-bottom:8px; }
+    .cal-weekday { text-align:center; font-size:11px; font-weight:700; letter-spacing:1px; color:var(--sub); padding:6px; }
+    #cal-grid { display:grid; grid-template-columns:repeat(7,1fr); gap:4px; }
+    .cal-day {
+      aspect-ratio:1; background:var(--card); border:1px solid var(--border);
+      border-radius:12px; padding:8px; cursor:pointer; transition:.2s;
+      display:flex; flex-direction:column; align-items:flex-start;
+      position:relative; overflow:hidden;
+    }
+    .cal-day:hover { border-color:var(--text); }
+    .cal-day.empty { background:transparent; border-color:transparent; cursor:default; }
+    .cal-day.today { background:var(--text); color:var(--bg); border-color:transparent; }
+    .cal-day-num { font-size:13px; font-weight:700; line-height:1; }
+    .cal-event-dot { width:6px; height:6px; border-radius:50%; margin-top:4px; }
+    .event-list-item {
+      display:flex; align-items:center; gap:12px;
+      padding:14px; border-radius:14px; background:var(--card);
+      border:1px solid var(--border); margin-bottom:10px;
+    }
+    .event-color-bar { width:4px; height:40px; border-radius:4px; flex-shrink:0; }
+    .event-modal-overlay {
+      position:fixed; inset:0; background:rgba(0,0,0,0.5);
+      z-index:8000; display:none; justify-content:center; align-items:center;
+      backdrop-filter:blur(4px);
+    }
+    .event-modal {
+      background:var(--surface); border-radius:24px; padding:40px;
+      width:90%; max-width:460px; border:1px solid var(--border);
+      animation:secFade .3s ease;
+    }
+    .event-modal h3 { font-family:var(--font-display); font-size:22px; margin-bottom:24px; }
+    .modal-field { margin-bottom:16px; }
+    .modal-field label { display:block; font-size:11px; font-weight:700; letter-spacing:1px; text-transform:uppercase; color:var(--sub); margin-bottom:6px; }
+    .modal-field input { width:100%; padding:12px 16px; border:1px solid var(--border); border-radius:12px; font-size:14px; background:var(--bg); color:var(--text); font-family:var(--font-body); }
+    .modal-field input:focus { outline:none; border-color:var(--text); }
+    .modal-actions { display:flex; gap:10px; justify-content:flex-end; margin-top:24px; }
+    .btn-secondary { background:var(--border); color:var(--text); border:none; padding:12px 24px; border-radius:12px; font-weight:700; cursor:pointer; font-family:var(--font-display); font-size:13px; transition:.2s; }
+
+    /* ═══════════════════════════════════════════════
+       STATS
+    ═══════════════════════════════════════════════ */
+    .stats-bar-item { margin-bottom:18px; }
+    .stats-bar-label { font-size:13px; font-weight:600; margin-bottom:6px; display:flex; align-items:center; gap:6px; }
+    .stats-bar-wrap { display:flex; align-items:center; gap:12px; }
+    .stats-bar-fill { height:10px; border-radius:99px; transition:width 1s cubic-bezier(.4,0,.2,1); }
+    .stats-bar-val { font-family:var(--font-display); font-weight:800; font-size:15px; min-width:32px; }
+    /* override width inline since parent is flex */
+    .stats-bar-outer { flex:1; height:10px; background:var(--border); border-radius:99px; overflow:hidden; }
+    .eba-stat-card { text-align:center; padding:30px; background:var(--card); border:1px solid var(--border); border-radius:var(--radius); flex:1; }
+    .eba-stat-num { font-family:var(--font-display); font-size:48px; font-weight:800; letter-spacing:-2px; }
+    .eba-stat-label { font-size:11px; color:var(--sub); margin-top:6px; letter-spacing:1px; }
+    .stats-mini-card { background:var(--card); border:1px solid var(--border); border-radius:var(--radius); padding:24px; text-align:center; }
+    .stats-mini-num { font-family:var(--font-display); font-size:40px; font-weight:800; }
+    .stats-mini-lbl { font-size:11px; color:var(--sub); margin-top:4px; letter-spacing:1px; text-transform:uppercase; }
+    #stats-eba { display:flex; gap:12px; }
+    #stats-tasks { display:grid; grid-template-columns:repeat(4,1fr); gap:12px; }
+
+    /* ═══════════════════════════════════════════════
+       POMODORO
+    ═══════════════════════════════════════════════ */
+    .pomo-center { display:flex; flex-direction:column; align-items:center; gap:32px; padding:40px 0; }
+    .pomo-svg-wrap { position:relative; width:280px; height:280px; }
+    .pomo-svg { transform:rotate(-90deg); }
+    #pomo-ring {
+      stroke-dasharray: 753;
+      stroke-dashoffset: 0;
+      transition: stroke-dashoffset 1s linear;
+    }
+    #pomo-timer {
+      position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+      font-family:var(--font-display); font-size:64px; font-weight:800; letter-spacing:-3px;
+    }
+    #pomo-label { font-size:12px; letter-spacing:3px; text-transform:uppercase; color:var(--sub); }
+    .pomo-controls { display:flex; gap:12px; align-items:center; }
+    .pomo-mode-btns { display:flex; gap:8px; }
+    .pomo-mode-btn {
+      background:var(--card); border:1px solid var(--border);
+      border-radius:20px; padding:8px 20px; cursor:pointer; font-size:12px;
+      font-weight:700; color:var(--sub); transition:.2s; font-family:var(--font-body);
+    }
+    .pomo-mode-btn.active { background:var(--text); color:var(--bg); border-color:transparent; }
+    #pomo-btn {
+      background:var(--text); color:var(--bg); border:none;
+      padding:14px 40px; border-radius:99px; font-size:15px; font-weight:800;
+      cursor:pointer; font-family:var(--font-display); letter-spacing:-.3px;
+      transition:.2s;
+    }
+    #pomo-btn:hover { opacity:.8; }
+    .pomo-reset-btn {
+      background:none; border:1px solid var(--border); border-radius:99px;
+      padding:14px 24px; font-size:13px; cursor:pointer;
+      color:var(--sub); transition:.2s; font-family:var(--font-body);
+    }
+    .pomo-reset-btn:hover { border-color:var(--text); color:var(--text); }
+    .pomo-stats { display:flex; gap:40px; }
+    .pomo-stat { text-align:center; }
+    .pomo-stat-num { font-family:var(--font-display); font-size:36px; font-weight:800; }
+    .pomo-stat-lbl { font-size:11px; color:var(--sub); letter-spacing:1px; text-transform:uppercase; }
+
+    /* ═══════════════════════════════════════════════
+       HABITS
+    ═══════════════════════════════════════════════ */
+    .habits-layout { display:grid; grid-template-columns:1fr 240px; gap:24px; }
+    .habit-item {
+      display:flex; align-items:center; gap:16px;
+      background:var(--card); border:1px solid var(--border);
+      border-radius:16px; padding:18px 22px; margin-bottom:12px;
+      transition:all .3s; animation:slideIn .3s ease;
+    }
+    .habit-item.habit-done { opacity:.6; }
+    .habit-check {
+      width:32px; height:32px; border:2px solid var(--border);
+      border-radius:50%; display:flex; align-items:center;
+      justify-content:center; cursor:pointer; font-size:14px;
+      font-weight:800; transition:.2s; flex-shrink:0;
+    }
+    .habit-done .habit-check { background:var(--text); color:var(--bg); border-color:var(--text); }
+    .habit-info { flex:1; }
+    .habit-name { font-weight:600; font-size:14px; }
+    .habit-streak { font-size:11px; color:var(--sub); margin-top:3px; }
+    .habit-del { background:none; border:none; color:var(--border); cursor:pointer; font-size:20px; transition:.2s; }
+    .habit-del:hover { color:#e74c3c; }
+    .habit-ring-card { background:var(--card); border:1px solid var(--border); border-radius:var(--radius); padding:30px; text-align:center; position:sticky; top:80px; }
+    #habit-ring-fill { transition:stroke-dashoffset .8s cubic-bezier(.4,0,.2,1); stroke:var(--text); }
+    #habit-pct { font-family:var(--font-display); font-size:32px; font-weight:800; margin-top:12px; }
+    .habit-input-wrap { display:flex; gap:10px; margin-bottom:24px; }
+    .habit-input-wrap input { flex:1; padding:12px 16px; border:1px solid var(--border); border-radius:12px; font-size:14px; background:var(--card); color:var(--text); font-family:var(--font-body); }
+    .habit-input-wrap input:focus { outline:none; border-color:var(--text); }
+
+    /* ═══════════════════════════════════════════════
+       COMMAND PALETTE
+    ═══════════════════════════════════════════════ */
+    #cmd-palette {
+      position:fixed; inset:0; background:rgba(0,0,0,0.5);
+      z-index:9000; display:none; justify-content:center;
+      align-items:flex-start; padding-top:15vh;
+      backdrop-filter:blur(4px);
+    }
+    .cmd-box {
+      background:var(--surface); border:1px solid var(--border);
+      border-radius:20px; width:90%; max-width:560px;
+      overflow:hidden; box-shadow:0 40px 80px rgba(0,0,0,0.2);
+      animation:secFade .2s ease;
+    }
+    #cmd-input {
+      width:100%; padding:18px 24px; border:none; border-bottom:1px solid var(--border);
+      font-size:16px; background:transparent; color:var(--text);
+      font-family:var(--font-body); outline:none;
+    }
+    #cmd-results { max-height:300px; overflow-y:auto; }
+    .cmd-item {
+      padding:14px 24px; cursor:pointer; font-size:14px; transition:.15s;
+      border-bottom:1px solid var(--border);
+    }
+    .cmd-item:hover { background:var(--bg); }
+    .cmd-item:last-child { border-bottom:none; }
+
+    /* ═══════════════════════════════════════════════
+       SCROLLBAR
+    ═══════════════════════════════════════════════ */
+    ::-webkit-scrollbar { width:6px; }
+    ::-webkit-scrollbar-track { background:transparent; }
+    ::-webkit-scrollbar-thumb { background:var(--border); border-radius:99px; }
+
+    /* ═══════════════════════════════════════════════
+       RESPONSIVE
+    ═══════════════════════════════════════════════ */
+    @media (max-width:900px) {
+      .span-3,.span-4,.span-5,.span-6,.span-7,.span-8,.span-9 { grid-column:span 12; }
+      .notes-container { grid-template-columns:1fr; height:auto; }
+      .notes-list { height:200px; }
+      .habits-layout { grid-template-columns:1fr; }
+      #stats-tasks { grid-template-columns:repeat(2,1fr); }
+      #stats-eba { flex-direction:column; }
+      nav { gap:0; overflow-x:auto; }
+      nav a { padding:6px 8px; font-size:11px; }
+    }
+    @media (max-width:600px) {
+      h1 { letter-spacing:-2px; }
+      .pomo-svg-wrap { width:220px; height:220px; }
+      #pomo-timer { font-size:48px; }
+    }
+  </style>
+</head>
+<body>
+
+<!-- ══════════════ INTRO ══════════════ -->
+<div id="intro-overlay">
+  <div class="star-loader"></div>
+  <div class="intro-text">2BTX-eko PLE osatuena</div>
+</div>
+
+<!-- ══════════════ NAV ══════════════ -->
+<nav>
+  <div class="nav-logo">2BTX PLE</div>
+  <a onclick="navigate('home')"     id="nav-home"     class="active">Hasiera</a>
+  <a onclick="navigate('grades')"   id="nav-grades"          >Notak</a>
+  <a onclick="navigate('academy')"  id="nav-academy"         >Akademia</a>
+  <a onclick="navigate('notes')"    id="nav-notes"           >Oharrak</a>
+  <a onclick="navigate('tasks')"    id="nav-tasks"           >Zereginak</a>
+  <a onclick="navigate('calendar')" id="nav-calendar"        >Egutegia</a>
+  <a onclick="navigate('stats')"    id="nav-stats"           >Estatistikak</a>
+  <a onclick="navigate('pomodoro')" id="nav-pomodoro"        >Pomodoro</a>
+  <a onclick="navigate('habits')"   id="nav-habits"          >Ohiturak</a>
+  <button id="cmd-trigger" onclick="openCommandPalette()">⌘K <kbd>⌘K</kbd></button>
+  <button id="dark-toggle" onclick="toggleDarkMode()">☾</button>
+</nav>
+
+<!-- ══════════════ HOME ══════════════ -->
+<section id="home" class="active">
+  <canvas class="section-canvas" data-type="dots"></canvas>
+  <div class="section-content">
+    <div class="section-eyebrow">Ikasle Arloaren Kudeaketa</div>
+    <div id="home-greeting" class="home-greeting">Egun on.<br>Hasi gaitezen.</div>
+
+    <div class="grid" style="margin-top:8px;">
+      <!-- GPA -->
+      <div class="card card-dark span-4">
+        <div class="stat-label" style="color:rgba(255,255,255,0.5);">GPA OROKORRA</div>
+        <div class="stat-big" id="home-gpa" style="margin-top:12px;">0.0</div>
+        <div style="margin-top:20px;height:2px;background:rgba(255,255,255,0.15);border-radius:99px;">
+          <div style="height:100%;width:0%;background:var(--ls-yellow);border-radius:99px;transition:width 1s;" id="home-gpa-bar"></div>
+        </div>
+      </div>
+      <!-- Streak -->
+      <div class="card span-4">
+        <div class="section-eyebrow">Egun segida</div>
+        <div class="stat-big" id="home-streak">0</div>
+        <div style="font-size:32px;margin-top:4px;">🔥</div>
+      </div>
+      <!-- Pending tasks -->
+      <div class="card span-4">
+        <div class="section-eyebrow">Zeregin zain</div>
+        <div class="stat-big" id="home-pending">0</div>
+        <div style="font-size:32px;margin-top:4px;">✅</div>
+      </div>
+
+      <!-- Upcoming events -->
+      <div class="card span-6">
+        <h3 style="margin-bottom:16px;">Hurrengo gertaerak</h3>
+        <div id="home-upcoming"></div>
+        <button onclick="navigate('calendar')" class="btn-primary" style="margin-top:20px;font-size:12px;">Egutegira →</button>
+      </div>
+
+      <!-- Recent notes -->
+      <div class="card span-6">
+        <h3 style="margin-bottom:16px;">Azken oharrak</h3>
+        <div id="home-recent-notes"></div>
+        <button onclick="navigate('notes')" class="btn-primary" style="margin-top:20px;font-size:12px;">Ohar guztiak →</button>
+      </div>
+
+      <!-- Subjects quick view -->
+      <div class="card span-12">
+        <h3 style="margin-bottom:20px;">Ikasgaiak — azkar ikusi</h3>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;">
+          <!-- filled by JS below -->
+        </div>
+        <div style="display:flex;gap:10px;flex-wrap:wrap;" id="home-subjects-pills"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════ GRADES ══════════════ -->
+<section id="grades">
+  <canvas class="section-canvas" data-type="grid"></canvas>
+  <div class="section-content">
+    <div class="section-eyebrow">Ebaluazioa</div>
+    <h1>Zure Notak.</h1>
+    <p style="color:var(--sub);margin-bottom:36px;">Hiru EBAko batez bestekoa kalkulatzen da automatikoki.</p>
+
+    <div class="card span-12" style="padding:0;overflow:hidden;">
+      <table style="width:100%;border-collapse:collapse;">
+        <thead>
+          <tr style="text-align:left;color:var(--sub);font-size:11px;letter-spacing:1px;background:var(--bg);border-bottom:1px solid var(--border);">
+            <th style="padding:20px 24px;">IKASGAIA</th>
+            <th style="padding:20px;">1. EBA</th>
+            <th style="padding:20px;">2. EBA</th>
+            <th style="padding:20px;">3. EBA</th>
+            <th style="padding:20px 24px;">BATEZ BESTEKOA</th>
+          </tr>
+        </thead>
+        <tbody id="grades-table-body"></tbody>
+      </table>
+    </div>
+
+    <div class="total-gpa-box">
+      <div class="section-eyebrow" style="color:rgba(255,255,255,0.5);">BATEZ BESTEKO OROKORRA</div>
+      <div class="gpa-big" id="final-gpa-display">0.0</div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════ ACADEMY ══════════════ -->
+<section id="academy">
+  <canvas class="section-canvas" data-type="waves"></canvas>
+  <div class="section-content">
+    <div class="section-eyebrow">Baliabideak eta Ikasgaiak</div>
+    <h1>Akademia.</h1>
+    <p style="color:var(--sub);margin-bottom:36px;">Hautatu ikasgai bat baliabideak ikusteko.</p>
+    <div class="subj-selector" id="subj-list"></div>
+
+    <div id="subject-detail">
+      <div id="det-color-bar" class="det-color-bar"></div>
+      <div style="display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:30px;flex-wrap:wrap;gap:16px;">
+        <div>
+          <h2 id="det-title" style="font-size:clamp(32px,5vw,56px);letter-spacing:-2px;">Ikasgaia</h2>
+          <p id="det-desc" style="color:var(--sub);margin-top:6px;"></p>
+        </div>
+        <div style="text-align:right;">
+          <div style="font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--sub);">BATEZ BESTEKOA</div>
+          <div id="det-avg" style="font-family:var(--font-display);font-size:48px;font-weight:800;letter-spacing:-2px;"></div>
+        </div>
+      </div>
+      <div class="grid">
+        <div class="card span-6">
+          <h4 style="margin-bottom:16px;">📄 Baliabideak</h4>
+          <div id="det-resources"></div>
+        </div>
+        <div class="card span-6">
+          <h4 style="margin-bottom:16px;">📊 EBA Notak</h4>
+          <div id="det-mini-bars" class="det-mini-bars"></div>
+          <div style="margin-top:20px;padding-top:16px;border-top:1px solid var(--border);">
+            <p style="font-size:12px;color:var(--sub);">Notak aldatzeko joan <strong>Notak</strong> atalera.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════ NOTES ══════════════ -->
+<section id="notes">
+  <canvas class="section-canvas" data-type="blobs"></canvas>
+  <div class="section-content">
+    <div class="section-eyebrow">Ohar pertsonalak</div>
+    <h1>Oharrak.</h1>
+    <div style="margin:24px 0 16px;display:flex;justify-content:space-between;align-items:center;">
+      <span id="notes-total-label" class="note-count"></span>
+    </div>
+    <div class="notes-container">
+      <!-- Sidebar -->
+      <div class="notes-list">
+        <button onclick="addNote()" class="btn-primary" style="width:100%;margin-bottom:12px;">+ Ohar berria</button>
+        <div class="notes-search-wrap" style="margin-bottom:10px;">
+          <input type="text" id="notes-search" placeholder="🔍 Bilatu..." oninput="renderNotes()">
+        </div>
+        <div id="notes-sidebar"></div>
+      </div>
+      <!-- Editor -->
+      <div class="note-editor">
+        <div class="note-toolbar">
+          <span style="font-size:11px;font-weight:700;letter-spacing:1px;color:var(--sub);text-transform:uppercase;">Kolorea</span>
+          <div class="color-dot active" data-color="#ffd93d" style="background:#ffd93d;" onclick="setNoteColor('#ffd93d')"></div>
+          <div class="color-dot" data-color="#ff8fab" style="background:#ff8fab;" onclick="setNoteColor('#ff8fab')"></div>
+          <div class="color-dot" data-color="#a8e6cf" style="background:#a8e6cf;" onclick="setNoteColor('#a8e6cf')"></div>
+          <div class="color-dot" data-color="#74b9ff" style="background:#74b9ff;" onclick="setNoteColor('#74b9ff')"></div>
+          <div class="color-dot" data-color="#c77dff" style="background:#c77dff;" onclick="setNoteColor('#c77dff')"></div>
+          <div class="color-dot" data-color="#ff6b35" style="background:#ff6b35;" onclick="setNoteColor('#ff6b35')"></div>
+          <span class="note-count" id="notes-total-count" style="margin-left:auto;"></span>
+        </div>
+        <input type="text" id="note-title" placeholder="Izenburua…" oninput="saveNotes()">
+        <textarea id="note-body" placeholder="Hasi idazten…" oninput="saveNotes()"></textarea>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════ TASKS ══════════════ -->
+<section id="tasks">
+  <canvas class="section-canvas" data-type="lines"></canvas>
+  <div class="section-content">
+    <div class="section-eyebrow">Egiteko zerrenda</div>
+    <h1>Zereginak.</h1>
+
+    <div class="card span-12" style="margin:24px 0;">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
+        <span style="font-size:12px;font-weight:700;color:var(--sub);" id="task-progress-label">0/0 eginda (0%)</span>
+      </div>
+      <div class="progress-bar-outer"><div id="task-progress-fill"></div></div>
+    </div>
+
+    <div class="task-input-wrap">
+      <input type="text" id="task-input" placeholder="Zertan lan egin behar duzu?" onkeypress="if(event.key==='Enter')addTask()">
+      <select id="task-subject-sel"></select>
+      <input type="date" id="task-due" style="padding:12px 16px;border:1px solid var(--border);border-radius:12px;font-size:14px;background:var(--card);color:var(--text);font-family:var(--font-body);">
+      <select id="task-priority" style="padding:12px 16px;border:1px solid var(--border);border-radius:12px;font-size:14px;background:var(--card);color:var(--text);font-family:var(--font-body);">
+        <option value="low">🟢 Baxua</option>
+        <option value="medium">🟡 Ertaina</option>
+        <option value="high">🔴 Altua</option>
+      </select>
+      <button onclick="addTask()" class="btn-primary">+ Gehitu</button>
+    </div>
+
+    <div class="task-filter-bar">
+      <button class="filter-btn" onclick="document.getElementById('task-filter').value='all';renderTasks()">Denak</button>
+      <button class="filter-btn" onclick="document.getElementById('task-filter').value='pending';renderTasks()">Zain</button>
+      <button class="filter-btn" onclick="document.getElementById('task-filter').value='done';renderTasks()">Eginda</button>
+    </div>
+    <select id="task-filter" style="display:none;" onchange="renderTasks()"><option value="all">all</option><option value="pending">pending</option><option value="done">done</option></select>
+
+    <div id="tasks-list"></div>
+  </div>
+</section>
+
+<!-- ══════════════ CALENDAR ══════════════ -->
+<section id="calendar">
+  <canvas class="section-canvas" data-type="circles"></canvas>
+  <div class="section-content">
+    <div class="section-eyebrow">Planifikazioa</div>
+    <h1>Egutegia.</h1>
+
+    <div class="grid" style="margin-top:24px;">
+      <div class="card span-8">
+        <div class="cal-header">
+          <button class="cal-nav-btn" onclick="calPrev()">←</button>
+          <h2 id="cal-month-title"></h2>
+          <button class="cal-nav-btn" onclick="calNext()">→</button>
+          <button class="btn-primary" style="margin-left:auto;font-size:12px;" onclick="openDay('')">+ Gertaera</button>
+        </div>
+        <div class="cal-weekdays">
+          <div class="cal-weekday">AL</div><div class="cal-weekday">AR</div>
+          <div class="cal-weekday">AZ</div><div class="cal-weekday">OG</div>
+          <div class="cal-weekday">OL</div><div class="cal-weekday">LA</div>
+          <div class="cal-weekday">IG</div>
+        </div>
+        <div id="cal-grid"></div>
+      </div>
+      <div class="card span-4">
+        <h3 style="margin-bottom:16px;">Hurrengo gertaerak</h3>
+        <div id="upcoming-events"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Event Modal -->
+<div id="event-modal" class="event-modal-overlay">
+  <div class="event-modal">
+    <h3>📅 Gertaera berria</h3>
+    <div class="modal-field">
+      <label>Izenburua</label>
+      <input type="text" id="event-title-input" placeholder="Azterketa, bilera…">
+    </div>
+    <div class="modal-field">
+      <label>Data</label>
+      <input type="date" id="event-date-input">
+    </div>
+    <div class="modal-field">
+      <label>Kolorea</label>
+      <input type="color" id="event-color-input" value="#ff6b35" style="width:60px;height:40px;border:none;border-radius:8px;cursor:pointer;background:none;">
+    </div>
+    <div class="modal-actions">
+      <button class="btn-secondary" onclick="closeEventModal()">Utzi</button>
+      <button class="btn-primary" onclick="addEvent()">Gehitu</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════ STATS ══════════════ -->
+<section id="stats">
+  <canvas class="section-canvas" data-type="stars"></canvas>
+  <div class="section-content">
+    <div class="section-eyebrow">Analisia</div>
+    <h1>Estatistikak.</h1>
+
+    <div class="grid" style="margin-top:24px;">
+      <div class="card span-12">
+        <h3 style="margin-bottom:8px;">Ikasgaietako Batez Bestekoa</h3>
+        <p style="color:var(--sub);font-size:13px;margin-bottom:28px;">EBA hiruaren batez bestekoa ikasgai bakoitzeko.</p>
+        <div id="stats-chart"></div>
+      </div>
+
+      <div class="card span-12">
+        <h3 style="margin-bottom:20px;">EBA alderaketa</h3>
+        <div id="stats-eba"></div>
+      </div>
+
+      <div class="card span-6">
+        <h3 style="margin-bottom:6px;">🏆 Ikasgai onena</h3>
+        <div id="stats-best" style="display:flex;align-items:center;gap:12px;margin-top:16px;font-size:15px;"></div>
+      </div>
+      <div class="card span-6">
+        <h3 style="margin-bottom:6px;">📈 Hobetzekoa</h3>
+        <div id="stats-worst" style="display:flex;align-items:center;gap:12px;margin-top:16px;font-size:15px;"></div>
+      </div>
+
+      <div class="card span-12">
+        <h3 style="margin-bottom:20px;">Zereginen laburpena</h3>
+        <div id="stats-tasks"></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════ POMODORO ══════════════ -->
+<section id="pomodoro">
+  <canvas class="section-canvas" data-type="rings"></canvas>
+  <div class="section-content">
+    <div class="section-eyebrow">Denbora kudeaketa</div>
+    <h1>Pomodoro.</h1>
+
+    <div class="pomo-center">
+      <div class="pomo-mode-btns">
+        <button class="pomo-mode-btn active" data-mode="work" onclick="setTimerMode('work')">💼 Lana (25 min)</button>
+        <button class="pomo-mode-btn" data-mode="break" onclick="setTimerMode('break')">☕ Atsedena (5 min)</button>
+      </div>
+
+      <div class="pomo-svg-wrap">
+        <svg class="pomo-svg" width="280" height="280" viewBox="0 0 280 280">
+          <circle cx="140" cy="140" r="120" fill="none" stroke="var(--border)" stroke-width="8"/>
+          <circle id="pomo-ring" cx="140" cy="140" r="120" fill="none" stroke="var(--text)" stroke-width="8" stroke-linecap="round"/>
+        </svg>
+        <div id="pomo-timer">25:00</div>
+      </div>
+
+      <div id="pomo-label" style="font-size:12px;letter-spacing:3px;text-transform:uppercase;color:var(--sub);">Lan denbora</div>
+
+      <div class="pomo-controls">
+        <button class="pomo-reset-btn" onclick="resetPomodoro()">↺ Berrezarri</button>
+        <button id="pomo-btn" onclick="togglePomodoro()">▶ Hasi</button>
+      </div>
+
+      <div class="pomo-stats">
+        <div class="pomo-stat">
+          <div class="pomo-stat-num" id="pomo-count">0</div>
+          <div class="pomo-stat-lbl">Pomodoro eginda</div>
+        </div>
+        <div class="pomo-stat">
+          <div class="pomo-stat-num" id="pomo-time-total">0 min</div>
+          <div class="pomo-stat-lbl">Denbora guztira</div>
+        </div>
+      </div>
+
+      <div class="card" style="max-width:480px;width:100%;">
+        <h4 style="margin-bottom:10px;">Nola erabili</h4>
+        <p style="font-size:13px;color:var(--sub);line-height:1.6;">
+          1. Aukeratu zeregin bat.<br>
+          2. Hasi 25 minutuko lan aldia.<br>
+          3. Bukatzean, 5 minutuko atsedenaldia hartu.<br>
+          4. 4 pomodoro ostean, 15-30 minutuko atseden luzea.
+        </p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════ HABITS ══════════════ -->
+<section id="habits">
+  <canvas class="section-canvas" data-type="dots"></canvas>
+  <div class="section-content">
+    <div class="section-eyebrow">Eguneko errutina</div>
+    <h1>Ohiturak.</h1>
+
+    <div class="habit-input-wrap" style="margin-top:24px;">
+      <input type="text" id="habit-input" placeholder="Ohitura berria gehitu…" onkeypress="if(event.key==='Enter')addHabit()">
+      <button onclick="addHabit()" class="btn-primary">+ Gehitu</button>
+    </div>
+
+    <div class="habits-layout">
+      <div>
+        <div id="habits-list"></div>
+        <div class="card" style="margin-top:20px;padding:20px 24px;">
+          <p style="font-size:12px;color:var(--sub);">💡 Ohiturak egunero markatu segida mantentzeko. Segidak motibazioari laguntzen dio.</p>
+        </div>
+      </div>
+      <div class="habit-ring-card">
+        <p style="font-size:11px;letter-spacing:2px;text-transform:uppercase;color:var(--sub);margin-bottom:16px;">GAUR BETETA</p>
+        <svg width="120" height="120" viewBox="0 0 120 120" style="transform:rotate(-90deg)">
+          <circle cx="60" cy="60" r="54" fill="none" stroke="var(--border)" stroke-width="8"/>
+          <circle id="habit-ring-fill" cx="60" cy="60" r="54" fill="none" stroke-width="8" stroke-linecap="round"
+            stroke-dasharray="339" stroke-dashoffset="339"/>
+        </svg>
+        <div id="habit-pct">0%</div>
+        <p style="font-size:12px;color:var(--sub);margin-top:6px;">ohiturak</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════ COMMAND PALETTE ══════════════ -->
+<div id="cmd-palette" onclick="if(event.target===this)closeCommandPalette()">
+  <div class="cmd-box">
+    <input id="cmd-input" type="text" placeholder="Bilatu edo joan…" onkeyup="cmdSearch(event)">
+    <div id="cmd-results">
+      <div class="cmd-item" onclick="navigate('home');closeCommandPalette()">🏠 Hasiera</div>
+      <div class="cmd-item" onclick="navigate('grades');closeCommandPalette()">📊 Notak</div>
+      <div class="cmd-item" onclick="navigate('academy');closeCommandPalette()">📚 Akademia</div>
+      <div class="cmd-item" onclick="navigate('notes');closeCommandPalette()">📝 Oharrak</div>
+      <div class="cmd-item" onclick="navigate('tasks');closeCommandPalette()">✅ Zereginak</div>
+      <div class="cmd-item" onclick="navigate('calendar');closeCommandPalette()">📅 Egutegia</div>
+      <div class="cmd-item" onclick="navigate('stats');closeCommandPalette()">📈 Estatistikak</div>
+      <div class="cmd-item" onclick="navigate('pomodoro');closeCommandPalette()">🍅 Pomodoro</div>
+      <div class="cmd-item" onclick="navigate('habits');closeCommandPalette()">🌱 Ohiturak</div>
+      <div class="cmd-item" onclick="toggleDarkMode();closeCommandPalette()">🌙 Modu iluna</div>
+    </div>
+  </div>
+</div>
+
+<!-- JS -->
+<script src="script.js"></script>
+
+<!-- Home subjects pills (inline so it runs after DOM + SUBJECTS) -->
+<script>
+  // Render pills once DOM ready (script.js loaded)
+  window.addEventListener('load', () => {
+    const el = document.getElementById('home-subjects-pills');
+    if (el && typeof SUBJECTS !== 'undefined') {
+      el.innerHTML = SUBJECTS.map(s => `
+        <div onclick="navigate('academy')" style="display:flex;align-items:center;gap:8px;padding:8px 16px;border-radius:99px;background:${s.color}18;border:1px solid ${s.color}40;cursor:pointer;font-size:13px;font-weight:600;transition:.2s;" onmouseover="this.style.transform='scale(1.05)'" onmouseout="this.style.transform='scale(1)'">
+          <span>${s.icon}</span>${s.n}
+        </div>`).join('');
+    }
+    // Pomo time total updater
+    setInterval(() => {
+      const el2 = document.getElementById('pomo-time-total');
+      if (el2 && typeof STATE !== 'undefined') el2.innerText = (STATE.pomodoros * 25) + ' min';
+    }, 1000);
+  });
+</script>
+
+</body>
+</html>
